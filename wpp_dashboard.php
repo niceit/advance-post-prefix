@@ -9,7 +9,7 @@
 <table class="wp-list-table widefat fixed wpp-prefix" cellspacing="0">
 	<thead>
 		<tr>
-			<th scope="col" class="manage-column column-cb check-column"><input type="checkbox" /></th>
+			<th scope="col" class="manage-column column-cb check-column" style="text-align: center">#</th>
 			<th scope="col" class="manage-column column-prefix-name">Prefix Name</th>
 			<th scope="col" class="manage-column column-prefix-description">Description</th>
             <th scope="col" class="manage-column column-prefix-number-post">Number of articles</th>
@@ -18,9 +18,9 @@
 		</tr>
 	</thead>
 	<tbody>
-		<?php foreach ($prefix as $key => $value) : ?>
+		<?php $i =1; foreach ($prefix as $key => $value) : ?>
 		<tr>
-			<th scope="col" class="check-column"><input type="checkbox" name="prefix[]" value="<?php echo $value['id']; ?>" /></th>
+			<th scope="col" class="check-column" style="text-align: center"><?php  echo $i; ?></th>
 			<td class="column-prefix-name"><a href="<?php echo bloginfo ('wpurl'); ?>/wp-admin/admin.php?page=advance-post-prefix&action=edit&id=<?php echo $value['id']; ?>" title="Edit prefix"><?php echo $value['prefix']; ?></a></td>
 			<td class="column-prefix-description"><?php echo $value['description']; ?></td>
             <td class="column-prefix-number-post">
@@ -41,11 +41,11 @@
                     <?php  if($count_post>0) echo 'onclick="return confirm(\''.$value['prefix'].' has post, are you sure? \');"' ?>  >[Delete]</a>
             </td>
 		</tr>
-		<?php endforeach; ?>
+		<?php $i++; endforeach; ?>
 	</tbody>
 </table>
 <p class="description">Please carefull! If you choose delete prefix, it will be deleted without any confirmation under this version! Make sure you trusted the action!</p>
-<p><input type="submit" name="submit_form" value="Delete" class="button-primary" /> <a href="<?php echo get_bloginfo('wpurl') . '/wp-admin/admin.php?page=add-prefix'; ?>" class="button-primary">Add new</a></p>
+<p> <a href="<?php echo get_bloginfo('wpurl') . '/wp-admin/admin.php?page=add-prefix'; ?>" class="button-primary">Add new</a></p>
 </form>
 <script type="text/javascript">
 	function validateForm(){
