@@ -19,7 +19,7 @@
 	</thead>
 	<tbody>
 		<?php $i =1; foreach ($prefix as $key => $value) : ?>
-		<tr>
+		<tr <?php if($i%2==0) echo 'class="alternate"'; ?>>
 			<th scope="col" class="check-column" style="text-align: center"><?php  echo $i; ?></th>
 			<td class="column-prefix-name"><a href="<?php echo bloginfo ('wpurl'); ?>/wp-admin/admin.php?page=advance-post-prefix&action=edit&id=<?php echo $value['id']; ?>" title="Edit prefix"><?php echo $value['prefix']; ?></a></td>
 			<td class="column-prefix-description"><?php echo $value['description']; ?></td>
