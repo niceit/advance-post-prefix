@@ -36,7 +36,10 @@
 					echo $date->format("d/m/Y");
 				?>
 			</td>
-            <td><a href="/wp-admin/admin.php?page=advance-post-prefix&prefix_id=<?php echo $value['id']; ?>" <?php  if($count_post>0) echo 'class="delete"'; ?>  >[Delete]</a></td>
+            <td>
+                <a href="/wp-admin/admin.php?page=advance-post-prefix&prefix_id=<?php echo $value['id']; ?>"
+                    <?php  if($count_post>0) echo 'onclick="return confirm(\''.$value['prefix'].' has post, are you sure? \');"' ?>  >[Delete]</a>
+            </td>
 		</tr>
 		<?php endforeach; ?>
 	</tbody>
@@ -50,14 +53,4 @@
 		if (confirmBox) return true;
 		else return false;
 	}
-    jQuery(function(){
-        jQuery('.delete').click(function(event) {
-            event.preventDefault();
-            var r=confirm("Are you sure you want to delete?");
-            if (r==true)   {
-                window.location = $(this).attr('href');
-            }
-
-        });
-    });
 </script>

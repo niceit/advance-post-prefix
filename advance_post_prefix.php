@@ -234,7 +234,7 @@
 				PRIMARY KEY (`id`)
 			)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         $wpdb->query ($sql);
-        $post = array ('post_title' => 'Page Post prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt');
+        $post = array ('post_title' => 'Filter by post prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt');
         // Insert the post into the database
         $post_id = wp_insert_post ($post);
         update_option ('wp_post_id_prefix', $post_id);
