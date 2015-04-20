@@ -12,6 +12,7 @@
 			<th scope="col" class="manage-column column-cb check-column"><input type="checkbox" /></th>
 			<th scope="col" class="manage-column column-prefix-name">Prefix Name</th>
 			<th scope="col" class="manage-column column-prefix-description">Description</th>
+            <th scope="col" class="manage-column column-prefix-number-post">Number of articles</th>
 			<th scope="col" class="manage-column column-prefix-date">Date added</th>
 		</tr>
 	</thead>
@@ -21,6 +22,13 @@
 			<th scope="col" class="check-column"><input type="checkbox" name="prefix[]" value="<?php echo $value['id']; ?>" /></th>
 			<td class="column-prefix-name"><a href="<?php echo bloginfo ('wpurl'); ?>/wp-admin/admin.php?page=advance-post-prefix&action=edit&id=<?php echo $value['id']; ?>" title="Edit prefix"><?php echo $value['prefix']; ?></a></td>
 			<td class="column-prefix-description"><?php echo $value['description']; ?></td>
+            <td class="column-prefix-number-post">
+                <?php
+                    $query =  $wpdb->get_results ("SELECT COUNT(*) FROM {$wpdb->base_prefix}postmeta WHERE meta_key = 'prefix' AND meta_value = " . $value['id'], ARRAY_A);
+                    $count_post = $query[0]['COUNT(*)'];
+                    echo $count_post;
+                ?>
+            </td>
 			<td class="column-prefix-date">
 				<?php
 					$date = new DateTime($value['date']);
