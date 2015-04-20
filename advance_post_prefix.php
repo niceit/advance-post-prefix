@@ -45,7 +45,7 @@
             return $title;
         }
 
-        if(!isset($_GET['prefix_id']) &&  get_option('wp_action_prefix')==0 )
+        if(get_option('wp_action_prefix')==0 )
         {
             if (get_option ('wp_post_id_prefix') && get_option ('wp_post_id_prefix') != '') {
                 $prefix_meta = get_post_meta ($post->ID, 'prefix', true);
