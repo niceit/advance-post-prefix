@@ -1,10 +1,10 @@
 <?php
     /*
     Plugin Name: Advance Post Prefix
-    Version: 1.1.1
+    Version: 1.5.1
     Author: Tran Tuan
-    Plugin URI: http://phprockets.com
-    Author URI: http://phprockets.com
+    Plugin URI: http://www.phprockets.com
+    Author URI: http://www.phprockets.com
     Description: Add custom post prefix to the post title, easily to use and manage. Display post prefix on add new and edit post page, supported quick post also on admin area.
     */
     function wpp_register_menu () {
