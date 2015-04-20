@@ -14,6 +14,7 @@
 			<th scope="col" class="manage-column column-prefix-description">Description</th>
             <th scope="col" class="manage-column column-prefix-number-post">Number of articles</th>
 			<th scope="col" class="manage-column column-prefix-date">Date added</th>
+            <th scope="col" class="manage-column column-prefix-delete">Delete</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -23,11 +24,11 @@
 			<td class="column-prefix-name"><a href="<?php echo bloginfo ('wpurl'); ?>/wp-admin/admin.php?page=advance-post-prefix&action=edit&id=<?php echo $value['id']; ?>" title="Edit prefix"><?php echo $value['prefix']; ?></a></td>
 			<td class="column-prefix-description"><?php echo $value['description']; ?></td>
             <td class="column-prefix-number-post">
-                <?php
+                <a href="/wp-admin/edit.php"><?php
                     $query =  $wpdb->get_results ("SELECT COUNT(*) FROM {$wpdb->base_prefix}postmeta WHERE meta_key = 'prefix' AND meta_value = " . $value['id'], ARRAY_A);
                     $count_post = $query[0]['COUNT(*)'];
                     echo $count_post;
-                ?>
+                ?></a>
             </td>
 			<td class="column-prefix-date">
 				<?php
@@ -35,6 +36,7 @@
 					echo $date->format("d/m/Y");
 				?>
 			</td>
+            <td><a href="/wp-admin/admin.php?page=advance-post-prefix&prefix_id=<?php echo $value['id']; ?>" <?php  if($count_post>0) echo 'class="delete"'; ?>  >[Delete]</a></td>
 		</tr>
 		<?php endforeach; ?>
 	</tbody>
@@ -44,9 +46,18 @@
 </form>
 <script type="text/javascript">
 	function validateForm(){
-		alert ("12345");
 		var confirmBox = confirm("Are you sure delete selected item(s)?");
 		if (confirmBox) return true;
 		else return false;
 	}
+    jQuery(function(){
+        jQuery('.delete').click(function(event) {
+            event.preventDefault();
+            var r=confirm("Are you sure you want to delete?");
+            if (r==true)   {
+                window.location = $(this).attr('href');
+            }
+
+        });
+    });
 </script>
