@@ -1,5 +1,5 @@
 <select name="post_prefix_input" id="post-prefix-input">
-	<option value="0"<?php if (empty ($prefix_meta)) echo " selected"; ?>>-No Prefix-</option>
+	<option value="0"<?php if (empty ($prefix_meta)) echo " selected"; ?> >-No Prefix-</option>
 	<?php
 		if (!empty ($prefix)){
 			foreach ($prefix as $name){

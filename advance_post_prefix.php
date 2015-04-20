@@ -38,13 +38,23 @@ function wpp_rewrite_title($title){
 	global $wpdb;
 	global $post;
 	if(!are_we_in("the_title")) { return $title; }
-	$prefix_meta = get_post_meta ($post->ID, 'prefix', true);
-	if (!empty ($prefix_meta)){
-		$sql = "SELECT * FROM {$wpdb->base_prefix}post_prefix WHERE id = {$prefix_meta}";
-		$prefix = $wpdb->get_row ($sql, ARRAY_A);
-		if (!empty ($prefix))
-			$title = "[" . $prefix['prefix'] . "] " . $title;
-	}
+    if(get_option('post_id_prefix') && get_option('post_id_prefix')!=''){
+        $prefix_meta = get_post_meta ($post->ID, 'prefix', true);
+        if (!empty ($prefix_meta)){
+            $sql = "SELECT * FROM {$wpdb->base_prefix}post_prefix WHERE id = {$prefix_meta}";
+            $prefix = $wpdb->get_row ($sql, ARRAY_A);
+            if (!empty ($prefix))
+            $title = " <span class='prefix' >[" . $prefix['prefix'] . "]</span>" . $title .
+            '<script type="text/javascript">
+                                jQuery("span.prefix").each(function(){
+                                    var jParent = jQuery(this).parent("a");
+                                    var link = jQuery(this).attr("onclick");
+                                    jQuery(this).remove();
+                                    jParent.before(\'<a href="'.esc_url( home_url( '/' ) ).'?page_id='.get_option('post_id_prefix').'&prefix_id='.$prefix_meta.'">'.$prefix['prefix'].'</a>\');
+                                });
+          </script>'.$title;
+        }
+    }
 	return $title;
 }
 
@@ -159,6 +169,18 @@ function wpp_init_data(){
 				PRIMARY KEY (`id`)
 			)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 	$wpdb->query ($sql);
+    $post = array(
+        'post_title'    => 'Page Post prefix',
+        'post_content'  => '[prefix_content]',
+        'post_status'   => 'publish',
+        'post_author'   => 1,
+        'post_type' => 'page',
+        'post_excerpt' => 'post_excerpt'
+    );
+// Insert the post into the database
+    $post_id =   wp_insert_post( $post );
+    update_option( 'post_id_prefix',$post_id);
+
 }
 
 //Remove data when uninstall plugin
@@ -166,6 +188,9 @@ function wpp_remove_data(){
 	global $wpdb;
 	$sql = "DROP TABLE `{$wpdb->base_prefix}post_prefix`";
 	$wpdb->query ($sql);
+
+    wp_delete_post( get_option('post_id_prefix'), true );
+    delete_option('post_id_prefix');
 }
 
 
@@ -179,4 +204,46 @@ add_action ('admin_head', 'wpp_add_prefix');
 
 /* Ajax Callback */
 add_action ('wp_ajax_fetchprefix', 'wpp_fetch_data');
+
+function load_post_prefix(){
+    $arr_prefix = array();
+    if(isset($_GET['page_id'])&& $_GET['page_id'] == get_option('post_id_prefix'))
+    {
+        if(isset($_GET['prefix_id'])) {
+            global $wpdb;
+            $sql = "select * from `{$wpdb->base_prefix}postmeta`  where meta_key = 'prefix' and meta_value = ".$_GET['prefix_id'];
+            $prefix_meta = $wpdb->get_results ($sql);
+            foreach($prefix_meta as $val){
+                $arr_prefix[] = $val->post_id;
+            }
+        }
+        else{
+        }
+    }
+    else{
+        echo '<p>There are no posts in this prefix.</p>';
+    }
+    $args = array(
+        'post_type' => 'post',
+        'post__in'=>$arr_prefix,
+        'paged' => ( get_query_var('paged') ? get_query_var('paged') : 1 ),
+        'posts_per_page' => get_option('posts_per_page')
+    );
+    $wp_query = new WP_Query( $args );
+    while ($wp_query->have_posts()) : $wp_query->the_post();
+        get_template_part( 'content', '' );
+    endwhile;
+
+     if ($wp_query->max_num_pages > 1) { // check if the max number of pages is greater than 1  ?>
+        <nav class="prev-next-posts">
+            <div class="prev-posts-link">
+                <?php echo get_next_posts_link( 'Older Entries', $wp_query->max_num_pages ); // display older posts link ?>
+            </div>
+            <div class="next-posts-link">
+                <?php echo get_previous_posts_link( 'Newer Entries' ); // display newer posts link ?>
+            </div>
+        </nav>
+    <?php }
+}
+add_shortcode('prefix_content', 'load_post_prefix');
 ?>
