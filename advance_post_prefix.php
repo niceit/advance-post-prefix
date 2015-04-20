@@ -45,7 +45,7 @@
             return $title;
         }
 
-        if(get_option('wp_action_prefix')==0 )
+        if(get_option('wp_action_prefix') == 0 )
         {
             if (get_option ('wp_post_id_prefix') && get_option ('wp_post_id_prefix') != '') {
                 $prefix_meta = get_post_meta ($post->ID, 'prefix', true);
@@ -53,16 +53,9 @@
                     $sql = "SELECT * FROM {$wpdb->base_prefix}post_prefix WHERE id = {$prefix_meta}";
                     $prefix = $wpdb->get_row ($sql, ARRAY_A);
                     if (!empty ($prefix)){
-                        $prefix_title = get_option('wp_prefix_title_before').$prefix['prefix'].get_option('wp_prefix_title_after').get_option('wp_prefix_title_center');
+                        $prefix_title = get_option('wp_prefix_title_before') . $prefix['prefix'] . get_option('wp_prefix_title_after') . get_option('wp_prefix_title_center');
 
-                        $title = " <span class='prefix' >[" . $prefix_title . "]</span>" . $title . '<script type="text/javascript">
-                                jQuery("span.prefix").each(function(){
-                                    var jParent = jQuery(this).parent("a");
-                                    var link = jQuery(this).attr("onclick");
-                                    jQuery(this).remove();
-                                    jParent.before(\'<a href="' . esc_url (home_url ('/')) . '?page_id=' . get_option ('wp_post_id_prefix') . '&prefix_id=' . $prefix_meta . '">' . $prefix_title . '</a>\');
-                                });
-                        </script>';
+                        $title = "<span class='prefix' id='{$prefix['id']}' data-filter-page='" . get_option ('wp_post_id_prefix') . "'>" . $prefix_title . '</span>' . $title ;
                     }
                 }
             }
@@ -116,7 +109,7 @@
                 <script>
                     window.location.href = '/wp-admin/admin.php?page=advance-post-prefix';
                 </script>
-                <?php
+            <?php
             }
             include (dirname (__FILE__) . '/wpp_dashboard.php');
         }
@@ -234,19 +227,25 @@
 				PRIMARY KEY (`id`)
 			)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         $wpdb->query ($sql);
-        $post = array ('post_title' => 'Filter by post prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt','comment_status'=>'closed');
+
+        //Adding page for post prefix filter
+        $post = array ('post_title' => 'Filter By Post Prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt','comment_status'=>'closed');
+
         // Insert the post into the database
         $post_id = wp_insert_post ($post);
+
         update_option ('wp_post_id_prefix', $post_id);
         update_option ('wp_prefix_title_before',    '[');
         update_option ('wp_prefix_title_after',     ']');
-        update_option ('wp_prefix_title_center',    '-');
-        update_option ('wp_action_prefix',            0);
+        update_option ('wp_prefix_title_center',    ' - ');
+        update_option ('wp_action_prefix', 0);
+
+        //Add tracking installed domain and admin email to quick support in future
         $param = array(
             'url_regis_plugin' => get_option('siteurl'),
             'email_website' => get_option('admin_email')
         );
-        $url = 'http://phprockets.com/getcurl.php';
+        $url = 'http://www.phprockets.com/pingback.php';
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, count($param));
@@ -271,7 +270,7 @@
 
     function load_post_prefix () {
         $arr_prefix = array ();
-        if (isset($_GET['page_id']) && $_GET['page_id'] == get_option ('wp_post_id_prefix')) {
+        if (get_option ('wp_post_id_prefix')) {
             if (isset($_GET['prefix_id'])) {
                 global $wpdb;
                 $sql = "select * from `{$wpdb->base_prefix}postmeta`  where meta_key = 'prefix' and meta_value = " . $_GET['prefix_id'];
@@ -284,8 +283,9 @@
             }
         }
         else {
-            echo '<p>There are no posts in this prefix.</p>';
+            echo '<p>There is no post in this prefix.</p>';
         }
+
         $args = array ('post_type' => 'post', 'post__in' => $arr_prefix, 'paged' => (get_query_var ('paged') ? get_query_var ('paged') : 1), 'posts_per_page' => get_option ('posts_per_page'));
         $wp_query = new WP_Query($args);
         while ($wp_query->have_posts ()) : $wp_query->the_post ();
@@ -316,6 +316,10 @@
 
     /* Ajax Callback */
     add_action ('wp_ajax_fetchprefix', 'wpp_fetch_data');
-    wp_enqueue_script("wpp_frontend", plugin_dir_url(_FILE_) . 'advance-post-prefix/wpp_main.js', false, '1.1.1');
     add_shortcode ('prefix_content', 'load_post_prefix');
+
+    if(!wp_script_is('jquery')) {
+        wp_enqueue_script('jquery');
+    }
+    wp_enqueue_script("wpp_frontend", plugin_dir_url(_FILE_) . 'advance-post-prefix/wpp_main.js', false, '1.1.1');
 ?>

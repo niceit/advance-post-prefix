@@ -44,7 +44,6 @@
 		<?php $i++; endforeach; ?>
 	</tbody>
 </table>
-<p class="description">Please carefull! If you choose delete prefix, it will be deleted without any confirmation under this version! Make sure you trusted the action!</p>
 <p> <a href="<?php echo get_bloginfo('wpurl') . '/wp-admin/admin.php?page=add-prefix'; ?>" class="button-primary">Add new</a></p>
 </form>
 <script type="text/javascript">
