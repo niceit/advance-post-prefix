@@ -3,8 +3,8 @@
     Plugin Name: Advance Post Prefix
     Version: 1.1.1
     Author: Tran Tuan
-    Plugin URI: http://blog-it.info
-    Author URI: http://blog-it.info
+    Plugin URI: http://phprockets.com
+    Author URI: http://phprockets.com
     Description: Add custom post prefix to the post title, easily to use and manage. Display post prefix on add new and edit post page, supported quick post also on admin area.
     */
     function wpp_register_menu () {
@@ -234,7 +234,7 @@
 				PRIMARY KEY (`id`)
 			)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         $wpdb->query ($sql);
-        $post = array ('post_title' => 'Filter by post prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt');
+        $post = array ('post_title' => 'Filter by post prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt','comment_status'=>'closed');
         // Insert the post into the database
         $post_id = wp_insert_post ($post);
         update_option ('wp_post_id_prefix', $post_id);
@@ -277,7 +277,11 @@
         $args = array ('post_type' => 'post', 'post__in' => $arr_prefix, 'paged' => (get_query_var ('paged') ? get_query_var ('paged') : 1), 'posts_per_page' => get_option ('posts_per_page'));
         $wp_query = new WP_Query($args);
         while ($wp_query->have_posts ()) : $wp_query->the_post ();
-            get_template_part ('content', '');
+            if(get_template_part ('content', '')):
+                get_template_part ('content', '');
+            else:
+                include_once "content.php";
+            endif;
         endwhile;
         if ($wp_query->max_num_pages > 1) { // check if the max number of pages is greater than 1  ?>
             <nav class="prev-next-posts">
