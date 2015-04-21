@@ -228,13 +228,19 @@
 			)ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
         $wpdb->query ($sql);
 
-        //Adding page for post prefix filter
-        $post = array ('post_title' => 'Filter By Post Prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt','comment_status'=>'closed');
+        if(!get_option('wp_post_id_prefix') || get_option('wp_post_id_prefix')!=''){
+            $sql = "select * from `{$wpdb->base_prefix}posts`  where  ID = " . get_option('wp_post_id_prefix');
+            $post = $wpdb->get_results ($sql);
+            if(!$post){
+                //Adding page for post prefix filter
+                $post = array ('post_title' => 'Filter By Post Prefix', 'post_content' => '[prefix_content]', 'post_status' => 'publish', 'post_author' => 1, 'post_type' => 'page', 'post_excerpt' => 'post_excerpt','comment_status'=>'closed');
 
-        // Insert the post into the database
-        $post_id = wp_insert_post ($post);
+                // Insert the post into the database
+                $post_id = wp_insert_post ($post);
+                update_option ('wp_post_id_prefix', $post_id);
+            }
+        }
 
-        update_option ('wp_post_id_prefix', $post_id);
         update_option ('wp_prefix_title_before',    '[');
         update_option ('wp_prefix_title_after',     ']');
         update_option ('wp_prefix_title_center',    ' - ');
@@ -260,8 +266,8 @@
         global $wpdb;
         $sql = "DROP TABLE `{$wpdb->base_prefix}post_prefix`";
         $wpdb->query ($sql);
-        wp_delete_post (get_option ('wp_post_id_prefix'), true);
-        delete_option ('wp_post_id_prefix');
+        //wp_delete_post (get_option ('wp_post_id_prefix'), true);
+       // delete_option ('wp_post_id_prefix');
         delete_option ('wp_prefix_title_before');
         delete_option ('wp_prefix_title_after');
         delete_option ('wp_prefix_title_center');
