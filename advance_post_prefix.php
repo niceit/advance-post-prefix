@@ -286,13 +286,13 @@
             echo '<p>There is no post in this prefix.</p>';
         }
 
-        $args = array ('post_type' => 'post', 'post__in' => $arr_prefix, 'paged' => (get_query_var ('paged') ? get_query_var ('paged') : 1), 'posts_per_page' => get_option ('posts_per_page'));
+        $args = array ('post_type' => 'post','post_status'=>'publish', 'post__in' => $arr_prefix, 'paged' => (get_query_var ('paged') ? get_query_var ('paged') : 1), 'posts_per_page' => get_option ('posts_per_page'));
         $wp_query = new WP_Query($args);
         while ($wp_query->have_posts ()) : $wp_query->the_post ();
-            if(get_template_part ('content', '')):
-                get_template_part ('content', '');
+            if(get_template_part ('content1', '')!=null):
+                get_template_part ('content1', '');
             else:
-                include_once "content.php";
+                include("content.php");
             endif;
         endwhile;
         if ($wp_query->max_num_pages > 1) { // check if the max number of pages is greater than 1  ?>
